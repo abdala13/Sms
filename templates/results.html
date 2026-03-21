@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}{% block content %}
+<div class="panel"><h1>النتائج</h1>{% if scan %}<p>هذه النتائج تخص عملية الفحص رقم {{ scan.id }} بتاريخ {{ scan.created_at }}.</p>{% else %}<p>كل النتائج المحفوظة حتى الآن.</p>{% endif %}</div>
+<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>الهدف</th><th>النوع</th><th>الرابط المكتشف</th><th>التصنيف</th><th>الثقة</th><th>اختبار</th><th>تفاصيل</th></tr></thead><tbody>
+{% for f in findings %}
+<tr><td>{{ f.target_label }}</td><td><span class="badge {{ f.target_type }}">{{ f.target_type }}</span></td><td><a href="{{ f.page_url }}" target="_blank">{{ f.page_url }}</a></td><td>{{ f.classification }}</td><td>{{ f.confidence }}%</td><td>{% if f.testable %}<span class="badge ok">نعم</span>{% else %}<span class="badge warn">لا</span>{% endif %}</td><td><a class="btn secondary" href="{{ url_for('finding_detail', finding_id=f.id) }}">فتح</a></td></tr>
+{% else %}<tr><td colspan="7">لا توجد نتائج.</td></tr>{% endfor %}
+</tbody></table></div>
+<div class="cards" style="margin-top:18px">
+{% for f in findings %}
+  <div class="card"><div class="meta"><span class="badge {{ f.target_type }}">{{ f.target_type }}</span>{% if f.testable %}<span class="badge ok">قابل للاختبار</span>{% endif %}</div>
+  <h3>{{ f.target_label }}</h3><div class="small">{{ f.page_url }}</div><p><strong>{{ f.classification }}</strong> — {{ f.summary }}</p><p>الثقة: {{ f.confidence }}%</p>
+  <div class="actions"><a class="btn secondary" href="{{ url_for('finding_detail', finding_id=f.id) }}">التفاصيل</a></div></div>
+{% endfor %}
+</div>
+{% endblock %}

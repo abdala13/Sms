@@ -1,0 +1,17 @@
+
+{% extends "base.html" %}{% block content %}
+<div class="panel"><h1>الإعدادات</h1><p>هنا تضبط رقم الهاتف الافتراضي، الدومينات المسموح اختبارها، وحدود الفحص.</p>
+<form method="post"><div class="grid grid-2">
+  <div>
+    <label>رقم الهاتف الافتراضي</label><input type="text" name="default_phone" value="{{ settings.default_phone }}" placeholder="+970..." />
+    <label>الدومينات المسموح اختبارها (كل دومين في سطر)</label><textarea name="allowed_domains" placeholder="example.com&#10;staging.example.com">{{ settings.allowed_domains }}</textarea>
+    <label>وضع الاختبار الافتراضي</label><select name="default_test_mode">{% for mode in ['detect_only','fill_only','test_send'] %}<option value="{{ mode }}" {% if settings.default_test_mode == mode %}selected{% endif %}>{{ mode }}</option>{% endfor %}</select>
+  </div>
+  <div>
+    <label>عدد الصفحات الأقصى لكل موقع</label><input type="number" name="max_pages" value="{{ settings.max_pages }}" min="3" max="50" />
+    <label>عمق الزحف</label><input type="number" name="crawl_depth" value="{{ settings.crawl_depth }}" min="1" max="4" />
+    <label>حد الثقة لإظهار قابلية الاختبار</label><input type="number" name="confidence_threshold" value="{{ settings.confidence_threshold }}" min="10" max="95" />
+    <label><input type="checkbox" name="analyze_js" {% if settings.analyze_js %}checked{% endif %} /> تفعيل تحليل JavaScript</label>
+  </div>
+</div><div class="actions"><button class="btn" type="submit">حفظ الإعدادات</button></div></form></div>
+{% endblock %}

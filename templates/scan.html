@@ -1,0 +1,19 @@
+
+{% extends "base.html" %}{% block content %}
+<div class="grid grid-2">
+  <div class="panel"><h1>فحص جديد</h1><p>أدخل أهدافًا متعددة، كل هدف في سطر. يدعم: اسم خدمة، دومين، رابط موقع، رابط Google Play، أو رابط APK مباشر.</p>
+    <form method="post">
+      <label>الأهداف</label>
+      <textarea name="targets" placeholder="Facebook&#10;example.com&#10;https://example.com/signup&#10;https://play.google.com/store/apps/details?id=org.telegram.messenger&#10;https://example.com/app.apk"></textarea>
+      <div class="actions"><button class="btn" type="submit">ابدأ الفحص</button><a class="btn secondary" href="{{ url_for('results') }}">عرض كل النتائج</a></div>
+    </form></div>
+  <div class="panel"><h2>الإعدادات الحالية المستخدمة في الفحص</h2><hr>
+    <p><strong>عدد الصفحات الأقصى:</strong> {{ settings.max_pages }}</p>
+    <p><strong>عمق الزحف:</strong> {{ settings.crawl_depth }}</p>
+    <p><strong>تحليل JavaScript:</strong> {{ 'مفعل' if settings.analyze_js else 'غير مفعل' }}</p>
+    <p><strong>حد الثقة لقابلية الاختبار:</strong> {{ settings.confidence_threshold }}%</p>
+    <p><strong>الوضع الافتراضي للاختبار:</strong> {{ settings.default_test_mode }}</p>
+    <p><strong>رقم الهاتف الافتراضي:</strong> {{ settings.default_phone or 'غير مضبوط' }}</p>
+  </div>
+</div>
+{% endblock %}
