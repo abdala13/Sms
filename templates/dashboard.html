@@ -1,18 +1,1 @@
-
-{% extends "base.html" %}{% block content %}
-<div class="hero"><h1>لوحة التحكم</h1><p>من هنا تتابع آخر النتائج، العناصر القابلة للاختبار، وعدد نتائج الويب وروابط التطبيقات.</p></div>
-<div class="grid grid-5" style="margin-top:16px">
-  <div class="stat"><div>الأهداف</div><div class="num">{{ stats.targets }}</div></div>
-  <div class="stat"><div>نتائج الويب</div><div class="num">{{ stats.web_results }}</div></div>
-  <div class="stat"><div>نتائج التطبيقات</div><div class="num">{{ stats.app_results }}</div></div>
-  <div class="stat"><div>قابلة للاختبار</div><div class="num">{{ stats.testable }}</div></div>
-  <div class="stat"><div>الاختبارات المنفذة</div><div class="num">{{ stats.tests }}</div></div>
-</div>
-<div class="panel" style="margin-top:18px"><h2>آخر النتائج</h2><div class="cards">
-  {% for row in recent %}
-  <div class="card"><div class="meta"><span class="badge {{ row.target_type }}">{{ row.target_type }}</span>{% if row.testable %}<span class="badge ok">قابل للاختبار</span>{% endif %}</div>
-    <h3>{{ row.target_label }}</h3><div class="small">{{ row.page_url }}</div><p><strong>{{ row.classification }}</strong> — الثقة {{ row.confidence }}%</p>
-    <div class="actions"><a class="btn secondary" href="{{ url_for('finding_detail', finding_id=row.id) }}">التفاصيل</a></div></div>
-  {% else %}<p>لا توجد نتائج بعد. ابدأ فحصًا جديدًا.</p>{% endfor %}
-</div></div>
-{% endblock %}
+{% extends 'base.html' %}{% block content %}<div class="hero"><h1>لوحة التحكم</h1><p>الفحص الحقيقي يحفظ فقط النتائج المطابقة، ويعرض تقدم الفحص وروابط الزحف وسجلات الحذف والاختبار.</p></div><div class="grid grid-5" style="margin-top:16px"><div class="stat"><div>الأهداف</div><div class="num">{{ stats.targets }}</div></div><div class="stat"><div>نتائج الويب</div><div class="num">{{ stats.web_results }}</div></div><div class="stat"><div>نتائج التطبيقات</div><div class="num">{{ stats.app_results }}</div></div><div class="stat"><div>قابلة للاختبار</div><div class="num">{{ stats.testable }}</div></div><div class="stat"><div>الاختبارات المنفذة</div><div class="num">{{ stats.tests }}</div></div></div><div class="panel" style="margin-top:18px"><div class="actions" style="justify-content:space-between"><h2>آخر عمليات الفحص</h2><form class="inline-form" method="post" action="{{ url_for('delete_all') }}" onsubmit="return confirm('حذف كل النتائج والسجلات؟');"><button class="btn danger" type="submit">حذف الكل</button></form></div><div class="cards">{% for s in scans %}<div class="card"><h3>فحص #{{ s.id }}</h3><div class="small">{{ s.created_at }}</div><p>الحالة: <strong>{{ s.status }}</strong></p><p>{{ s.completed_targets }} / {{ s.total_targets }} هدف</p>{% if s.current_target %}<p>الحالي: {{ s.current_target }}</p>{% endif %}<div class="actions">{% if s.status != 'done' and s.status != 'failed' %}<a class="btn secondary" href="{{ url_for('scan_progress', scan_id=s.id) }}">التقدم</a>{% else %}<a class="btn secondary" href="{{ url_for('results', scan_id=s.id) }}">النتائج</a>{% endif %}<form class="inline-form" method="post" action="{{ url_for('delete_scan', scan_id=s.id) }}" onsubmit="return confirm('حذف نتائج هذا الفحص؟');"><button class="btn danger" type="submit">حذف</button></form></div></div>{% else %}<p>لا توجد عمليات فحص بعد.</p>{% endfor %}</div></div>{% endblock %}
