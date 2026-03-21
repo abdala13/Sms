@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sentinel-simple
+    name: sentinel-verify-platform-lite
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app.py"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
