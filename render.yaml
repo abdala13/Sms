@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sentinel-verify-platform-enhanced-lite
+    name: sentinel-verify-platform-smart-explorer
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
