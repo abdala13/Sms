@@ -2,11 +2,13 @@ services:
   - type: web
     name: curlflow-web
     env: docker
-    plan: starter
+    plan: free
+    dockerfilePath: ./Dockerfile
     autoDeploy: true
-    healthCheckPath: /dashboard
+
   - type: worker
     name: curlflow-worker
     env: docker
-    dockerCommand: ./scripts/start_worker.sh
-    plan: starter
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
