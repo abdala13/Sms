@@ -1,30 +1,17 @@
-# CurlFlow Manager
+# CurlFlow Manager v3
 
-منصة FastAPI لإدارة وتحويل طلبات cURL إلى تعريفات طلب آمنة، مع عرض Preview لكود Python، وإدارة تشغيلات HTTP مع مراقبة حية ولوجات أساسية.
+منصة FastAPI لإدارة وتحويل طلبات cURL إلى تعريفات طلب آمنة، مع عرض Preview لكود Python، وإدارة تشغيلات HTTP مع مراقبة حية ولوجات وتقارير أقوى.
 
-## ما الذي تم بناؤه في هذه النسخة
-- تسجيل/دخول بسيط بالجلسات
-- تحليل cURL إلى Request Definition
-- توليد Preview لكود Python باستخدام `httpx`
-- حفظ السكربتات في قاعدة البيانات
-- إدارة المدخلات الخاصة بكل سكربت
-- تشغيلات عبر Celery + Redis
-- Live Monitor عبر SSE
-- تصنيف أخطاء أساسي
-- اكتشاف challenge أساسي وتعليق المهمة بدل تجاوزها
-- Approved Packages registry
-- إعدادات مشتركة أولية
+## إضافات v3
+- استيراد سكربتات JSON من الواجهة
+- Runtime Profiles أساسية وربطها بالسكريبت
+- Queue Panel مستقلة لمراقبة التشغيلات النشطة والحديثة
+- تحسين Filters في صفحة Logs
+- تقارير آخر 7 أيام
+- تحسين parser لدعم `-G`, cookies داخل header, وتجميع data flags
+- تحديث بيانات السكربت بعد الإنشاء (اسم/وصف/وسوم/Profile)
 
-## حدود هذه النسخة
-هذه نسخة MVP قوية كنقطة انطلاق، وليست المنتج النهائي بكل التفاصيل المتفق عليها. ستحتاج إلى تطوير إضافي في:
-- التحليل المتقدم لـ cURL
-- تقارير أوسع
-- أدوار وصلاحيات أدق
-- Alembic migrations الحقيقية
-- تحسين إدارة التوقف/الاستئناف
-- اختبار E2E أوسع
-
-## تشغيل محلي
+## التشغيل المحلي
 ```bash
 python -m venv .venv
 source .venv/bin/activate
@@ -35,7 +22,12 @@ export REDIS_URL=redis://localhost:6379/0
 uvicorn app.main:app --reload
 ```
 
-في نافذة ثانية:
+وفي نافذة ثانية:
 ```bash
 celery -A app.tasks.celery_app.celery_app worker --loglevel=INFO
 ```
+
+## ملاحظات
+- التنفيذ ما زال يعتمد على Execution Engine آمن وليس على تشغيل كود Python نصي.
+- Challenge detection موجود للتعليق والتسجيل فقط.
+- Runtime Profiles في هذه النسخة أولية وتمهّد لتوسعات أكبر لاحقًا.

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>لوحة التحكم</h1><a class='btn' href='/scripts/new'>سكريبت جديد</a></div>
+<div class='card'>
+  <form method='get' class='inline-form'>
+    <input type='text' name='q' placeholder='بحث بالاسم أو الوصف أو الرابط أو الوسوم' value='{{ filters.q }}'>
+    <select name='status'>
+      <option value=''>كل الحالات</option>
+      {% for s in ['ready','queued','running','completed','failed','paused_verification','stopped'] %}<option value='{{ s }}' {% if filters.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+    <label><input type='checkbox' name='favorites' value='1' {% if filters.favorites %}checked{% endif %}> المفضلة فقط</label>
+    <button class='btn'>تطبيق</button>
+  </form>
+</div>
+<div class='stats'>
+  <div class='card stat'><strong>{{ overview.total_scripts }}</strong><span>عدد السكربتات</span></div>
+  <div class='card stat'><strong>{{ overview.active_runs }}</strong><span>التشغيلات النشطة</span></div>
+  <div class='card stat'><strong>{{ overview.success_rate }}%</strong><span>متوسط النجاح</span></div>
+  <div class='card stat'><strong>{{ overview.challenge_count }}</strong><span>تنبيهات التحدي</span></div>
+  <div class='card stat'><strong>{{ overview.avg_duration_ms }}</strong><span>متوسط زمن العنصر ms</span></div>
+</div>
+<div class='card'>
+  <table class='table'>
+    <thead><tr><th>★</th><th>الاسم</th><th>الطريقة</th><th>الهدف</th><th>الوسوم</th><th>آخر تشغيل</th><th>الإجراءات</th></tr></thead>
+    <tbody>
+      {% for script in scripts %}
+      <tr>
+        <td>{% if script.is_favorite %}★{% else %}☆{% endif %}</td>
+        <td>{{ script.name }}</td>
+        <td>{{ script.method }}</td>
+        <td class='mono'>{{ script.target_url }}</td>
+        <td>{{ script.tags|join(', ') if script.tags else '-' }}</td>
+        <td>{{ script.last_run_at or '-' }}</td>
+        <td class='actions'>
+          <a class='btn small' href='/scripts/{{ script.id }}'>فتح</a>
+          <form method='post' action='/scripts/{{ script.id }}/favorite'><button class='btn small'>تفضيل</button></form>
+          <form method='post' action='/scripts/{{ script.id }}/clone'><button class='btn small'>Clone</button></form>
+          <a class='btn small' href='/scripts/{{ script.id }}/export'>Export</a>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan='7'>لا توجد سكربتات بعد.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>التشخيص</h1></div>
+<div class='stats'>
+  <div class='card stat'><strong>{{ 'OK' if diag.db_ok else 'FAIL' }}</strong><span>قاعدة البيانات</span></div>
+  <div class='card stat'><strong>{{ diag.app_env }}</strong><span>البيئة</span></div>
+  <div class='card stat'><strong>{{ diag.max_workers_per_run }}</strong><span>الحد الأعلى للعمال</span></div>
+</div>
+<div class='card'>
+  <p><strong>الوقت:</strong> {{ diag.now }}</p>
+  <p><strong>DATABASE_URL:</strong> <span class='mono'>{{ diag.database_url }}</span></p>
+  <p><strong>REDIS_URL:</strong> <span class='mono'>{{ diag.redis_url }}</span></p>
+  <p><strong>ملاحظة v3:</strong> تم إضافة Queue Panel وImport JSON وRuntime Profiles وتقارير 7 أيام.</p>
+</div>
+{% endblock %}

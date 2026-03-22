@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<div x-data="runMonitor({{ run.id }}, {{ run.progress_percent }}, '{{ run.status }}', {{ run.processed_items }}, {{ run.success_count }}, {{ run.failure_count }}, {{ run.retry_count }})">
+  <div class='header-row'><h1>مراقبة التشغيل #{{ run.id }}</h1><form method='post' action='/runs/{{ run.id }}/stop'><button class='btn danger'>إيقاف</button></form></div>
+  <div class='stats'>
+    <div class='card stat'><strong x-text='status'></strong><span>الحالة</span></div>
+    <div class='card stat'><strong x-text='processed'></strong><span>تمت المعالجة</span></div>
+    <div class='card stat'><strong x-text='success'></strong><span>نجاح</span></div>
+    <div class='card stat'><strong x-text='failed'></strong><span>فشل</span></div>
+    <div class='card stat'><strong x-text='retries'></strong><span>Retries</span></div>
+  </div>
+  <div class='card'><div class='progress'><div class='bar' :style='`width:${progress}%`'></div></div><p><span x-text='progress'></span>%</p></div>
+  <div class='grid two'>
+    <div class='card'><h3>الأحداث</h3><ul class='events'><template x-for='event in events'><li><strong x-text='event.type'></strong> — <span x-text='event.message'></span></li></template></ul></div>
+    <div class='card'><h3>آخر العناصر</h3><table class='table'><thead><tr><th>النوع</th><th>الرسالة</th></tr></thead><tbody><template x-for='event in events.slice(0,15)'><tr><td x-text='event.type'></td><td x-text='event.message'></td></tr></template></tbody></table></div>
+  </div>
+</div>
+<script>
+function runMonitor(runId, initialProgress, initialStatus, initialProcessed, initialSuccess, initialFailed, initialRetries){
+  return {
+    progress:initialProgress,status:initialStatus,processed:initialProcessed,success:initialSuccess,failed:initialFailed,retries:initialRetries,events:[],
+    init(){
+      const source=new EventSource(`/runs/${runId}/stream`);
+      source.onmessage=(e)=>{
+        const data=JSON.parse(e.data);
+        if(data.run){
+          this.status=data.run.status;this.processed=data.run.processed_items;this.success=data.run.success_count;this.failed=data.run.failure_count;this.retries=data.run.retry_count;this.progress=data.run.progress_percent;
+        }
+        this.events.unshift({type:data.type,message:data.message||''});
+        if(['completed','failed','stopped','paused_verification'].includes(this.status)){source.close();}
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

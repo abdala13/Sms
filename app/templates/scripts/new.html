@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>سكريبت جديد من cURL</h1></div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>تحليل cURL</h3>
+    {% if error %}<div class='notice danger'>{{ error }}</div>{% endif %}
+    <form method='post' action='/scripts/analyze'>
+      <textarea name='curl' rows='14' placeholder='ألصق cURL كامل هنا'>{{ curl or '' }}</textarea>
+      <button class='btn'>Analyze</button>
+    </form>
+  </div>
+  <div class='card'>
+    <h3>استيراد سكربت JSON</h3>
+    <form method='post' enctype='multipart/form-data' action='/scripts/import'>
+      <input type='file' name='file' accept='.json' required>
+      <button class='btn'>Import</button>
+    </form>
+    <p class='muted'>يدعم ملفات التصدير من CurlFlow.</p>
+  </div>
+</div>
+
+{% if definition %}
+<div class='card'>
+  <h3>إنشاء السكربت</h3>
+  <form method='post' action='/scripts/create'>
+    <div class='grid two'>
+      <div>
+        <label>الاسم</label>
+        <input type='text' name='name' required>
+      </div>
+      <div>
+        <label>الوسوم (مفصولة بفواصل)</label>
+        <input type='text' name='tags' placeholder='api, smoke-test'>
+      </div>
+    </div>
+    <label>الوصف</label>
+    <textarea name='description' rows='3'></textarea>
+    <label>Runtime Profile</label>
+    <select name='runtime_profile_id'>
+      <option value=''>بدون تخصيص</option>
+      {% for profile in profiles %}<option value='{{ profile.id }}'>{{ profile.name }} (Python {{ profile.python_version }})</option>{% endfor %}
+    </select>
+    <input type='hidden' name='original_curl' value='{{ curl }}'>
+    <input type='hidden' name='request_definition' value='{{ definition | tojson }}'>
+    <input type='hidden' name='generated_code' value='{{ code }}'>
+    <button class='btn'>حفظ السكربت</button>
+  </form>
+</div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>Parsed Request</h3>
+    <pre>{{ definition | tojson(indent=2) }}</pre>
+  </div>
+  <div class='card'>
+    <h3>Generated Code</h3>
+    <pre>{{ code }}</pre>
+    <h3>Dependencies</h3>
+    <ul>{% for dep in deps %}<li>{{ dep.package_name }} {% if not dep.is_approved %}(غير معتمد){% endif %}</li>{% endfor %}</ul>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

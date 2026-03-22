@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang='ar' dir='rtl'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>{{ title or 'CurlFlow Manager' }}</title>
+  <link rel='stylesheet' href='/static/css/app.css'>
+  <script src='https://unpkg.com/htmx.org@1.9.12'></script>
+  <script defer src='https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js'></script>
+</head>
+<body>
+<div class='notice'>هذه المنصة مخصصة فقط للعمليات المصرح بها والاختبارات المشروعة والاتصالات المتوافقة مع السياسات.</div>
+<div class='layout'>
+  <aside class='sidebar'>
+    <h2>CurlFlow</h2>
+    <nav>
+      <a href='/dashboard'>لوحة التحكم</a>
+      <a href='/scripts/new'>سكريبت جديد</a>
+      <a href='/queue'>الطابور</a>
+      <a href='/reports'>التقارير</a>
+      <a href='/logs'>السجلات</a>
+      <a href='/diagnostics'>التشخيص</a>
+      <a href='/settings'>الإعدادات</a>
+    </nav>
+    <form method='post' action='/logout'><button class='btn danger' type='submit'>تسجيل الخروج</button></form>
+  </aside>
+  <main class='main'>{% block content %}{% endblock %}</main>
+</div>
+</body>
+</html>

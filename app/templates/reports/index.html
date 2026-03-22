@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>التقارير</h1></div>
+<div class='stats'>
+  <div class='card stat'><strong>{{ overview.total_scripts }}</strong><span>السكريبتات</span></div>
+  <div class='card stat'><strong>{{ overview.total_runs }}</strong><span>إجمالي التشغيلات</span></div>
+  <div class='card stat'><strong>{{ overview.active_runs }}</strong><span>تشغيلات نشطة</span></div>
+  <div class='card stat'><strong>{{ overview.success_rate }}%</strong><span>متوسط النجاح</span></div>
+  <div class='card stat'><strong>{{ overview.challenge_count }}</strong><span>تنبيهات challenge</span></div>
+  <div class='card stat'><strong>{{ overview.avg_duration_ms }}</strong><span>متوسط زمن العنصر ms</span></div>
+</div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>الأكثر استخدامًا</h3>
+    <table class='table'><thead><tr><th>السكريبت</th><th>عدد التشغيلات</th></tr></thead><tbody>
+      {% for name, count in overview.top_scripts %}<tr><td>{{ name }}</td><td>{{ count }}</td></tr>{% else %}<tr><td colspan='2'>لا توجد بيانات بعد.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+  <div class='card'>
+    <h3>أكثر الأخطاء تكرارًا</h3>
+    <table class='table'><thead><tr><th>الخطأ</th><th>العدد</th></tr></thead><tbody>
+      {% for err, count in overview.top_errors %}<tr><td>{{ err }}</td><td>{{ count }}</td></tr>{% else %}<tr><td colspan='2'>لا توجد أخطاء مسجلة.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+<div class='card'>
+  <h3>نشاط آخر 7 أيام</h3>
+  <table class='table'><thead><tr><th>اليوم</th><th>التشغيلات</th><th>نجاح</th><th>فشل</th></tr></thead><tbody>
+    {% for row in daily %}
+    <tr><td>{{ row.date }}</td><td>{{ row.runs }}</td><td>{{ row.success }}</td><td>{{ row.failure }}</td></tr>
+    {% else %}<tr><td colspan='4'>لا توجد بيانات.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+<div class='card'>
+  <h3>آخر 20 تشغيل</h3>
+  <table class='table'><thead><tr><th>#</th><th>الحالة</th><th>المعالج</th><th>نجاح</th><th>فشل</th><th></th></tr></thead><tbody>
+    {% for run in overview.recent_runs %}
+    <tr>
+      <td>#{{ run.id }}</td><td>{{ run.status }}</td><td>{{ run.processed_items }}/{{ run.total_items }}</td><td>{{ run.success_count }}</td><td>{{ run.failure_count }}</td>
+      <td><a class='btn small' href='/runs/{{ run.id }}/monitor'>فتح</a></td>
+    </tr>
+    {% else %}<tr><td colspan='6'>لا توجد تشغيلات بعد.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}

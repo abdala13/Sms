@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>السجلات</h1></div>
+<div class='card'>
+  <form method='get' class='inline-form'>
+    <select name='script_id'>
+      <option value=''>كل السكريبتات</option>
+      {% for script in scripts %}<option value='{{ script.id }}' {% if selected_script_id == script.id %}selected{% endif %}>{{ script.name }}</option>{% endfor %}
+    </select>
+    <select name='run_id'>
+      <option value=''>كل التشغيلات</option>
+      {% for run in runs %}<option value='{{ run.id }}' {% if selected_run_id == run.id %}selected{% endif %}>#{{ run.id }} - {{ run.status }}</option>{% endfor %}
+    </select>
+    <select name='level'>
+      <option value=''>كل المستويات</option>
+      {% for val in ['info','warning','error'] %}<option value='{{ val }}' {% if selected_level == val %}selected{% endif %}>{{ val }}</option>{% endfor %}
+    </select>
+    <select name='item_status'>
+      <option value=''>كل النتائج</option>
+      {% for val in ['success','failed','challenged','running'] %}<option value='{{ val }}' {% if selected_item_status == val %}selected{% endif %}>{{ val }}</option>{% endfor %}
+    </select>
+    <input type='text' name='error_type' placeholder='error type' value='{{ selected_error_type }}'>
+    <input type='text' name='q' placeholder='بحث في الرسائل أو المدخلات' value='{{ query_text }}'>
+    <button class='btn'>تصفية</button>
+  </form>
+</div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>الأحداث الأخيرة</h3>
+    <ul class='events'>
+      {% for event in events %}
+      <li><strong>{{ event.event_type }}</strong> — {{ event.message }} <span class='muted'>#{{ event.run_id }}</span></li>
+      {% else %}<li>لا توجد أحداث.</li>{% endfor %}
+    </ul>
+  </div>
+  <div class='card'>
+    <h3>نتائج العناصر</h3>
+    <table class='table'><thead><tr><th>التشغيل</th><th>الحالة</th><th>HTTP</th><th>الخطأ</th><th>الرسالة</th></tr></thead><tbody>
+      {% for item in items %}
+      <tr><td>#{{ item.run_id }}</td><td>{{ item.status }}</td><td>{{ item.http_status_code or '-' }}</td><td>{{ item.error_type or '-' }}</td><td>{{ item.result_message or '-' }}</td></tr>
+      {% else %}<tr><td colspan='5'>لا توجد نتائج بعد.</td></tr>{% endfor %}
+    </tbody></table>
+    <div class='muted'>تم التوليد: {{ generated_at }}</div>
+  </div>
+</div>
+{% endblock %}

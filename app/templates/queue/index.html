@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'><h1>لوحة الطابور</h1></div>
+<div class='stats'>
+  <div class='card stat'><strong>{{ active_runs|length }}</strong><span>تشغيلات نشطة</span></div>
+  <div class='card stat'><strong>{{ recent_runs|length }}</strong><span>آخر تشغيلات معروضة</span></div>
+</div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>Active / Queued</h3>
+    <table class='table'><thead><tr><th>#</th><th>الحالة</th><th>التقدم</th><th></th></tr></thead><tbody>
+      {% for run in active_runs %}
+      <tr><td>#{{ run.id }}</td><td>{{ run.status }}</td><td>{{ run.progress_percent }}%</td><td><a class='btn small' href='/runs/{{ run.id }}/monitor'>فتح</a></td></tr>
+      {% else %}<tr><td colspan='4'>لا توجد تشغيلات نشطة.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+  <div class='card'>
+    <h3>Recent Runs</h3>
+    <table class='table'><thead><tr><th>#</th><th>الحالة</th><th>المعالج</th><th></th></tr></thead><tbody>
+      {% for run in recent_runs %}
+      <tr><td>#{{ run.id }}</td><td>{{ run.status }}</td><td>{{ run.processed_items }}/{{ run.total_items }}</td><td><a class='btn small' href='/runs/{{ run.id }}/monitor'>فتح</a></td></tr>
+      {% else %}<tr><td colspan='4'>لا توجد بيانات.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='header-row'>
+  <h1>{{ script.name }}</h1>
+  <div class='actions'>
+    <form method='post' action='/scripts/{{ script.id }}/favorite'><button class='btn small'>{% if script.is_favorite %}إلغاء المفضلة{% else %}إضافة للمفضلة{% endif %}</button></form>
+    <form method='post' action='/scripts/{{ script.id }}/clone'><button class='btn small'>Clone</button></form>
+    <a class='btn small' href='/scripts/{{ script.id }}/export'>Export</a>
+    <form method='post' action='/scripts/{{ script.id }}/delete' onsubmit="return confirm('حذف السكربت؟')"><button class='btn danger small'>Delete</button></form>
+  </div>
+</div>
+<div class='card'>
+  <form method='post' action='/runs/start/{{ script.id }}' class='inline-form'>
+    <input type='number' name='workers' value='1' min='1' max='20'>
+    <input type='number' name='delay_ms' value='0' min='0'>
+    <input type='number' name='max_requests_per_minute' value='60' min='1'>
+    <input type='number' name='repeated_failure_threshold' value='5' min='1'>
+    <input type='number' step='0.05' min='0' max='1' name='max_failure_ratio' value='1.0'>
+    <select name='processing_mode'><option value='sequential'>Sequential</option><option value='random'>Random</option></select>
+    <label><input type='checkbox' name='continue_on_error' value='true' checked> Continue on Error</label>
+    <label><input type='checkbox' name='use_shared_user_agents' value='true' checked> Shared UA</label>
+    <label><input type='checkbox' name='dry_run' value='true'> Dry Run</label>
+    <button class='btn'>تشغيل</button>
+  </form>
+</div>
+<div class='grid two'>
+  <div class='card'>
+    <h3>بيانات السكربت</h3>
+    <form method='post' action='/scripts/{{ script.id }}/update'>
+      <label>الاسم</label>
+      <input type='text' name='name' value='{{ script.name }}' required>
+      <label>الوصف</label>
+      <textarea name='description' rows='3'>{{ script.description }}</textarea>
+      <label>الوسوم</label>
+      <input type='text' name='tags' value='{{ script.tags|join(", ") }}'>
+      <label>Runtime Profile</label>
+      <select name='runtime_profile_id'>
+        <option value=''>بدون تخصيص</option>
+        {% for profile in profiles %}<option value='{{ profile.id }}' {% if script.runtime_profile_id == profile.id %}selected{% endif %}>{{ profile.name }} (Python {{ profile.python_version }})</option>{% endfor %}
+      </select>
+      <button class='btn'>حفظ التعديلات</button>
+    </form>
+    <hr>
+    <p><strong>Method:</strong> {{ script.method }}</p>
+    <p><strong>URL:</strong> <span class='mono'>{{ script.target_url }}</span></p>
+    <p><strong>الوسوم:</strong> {{ script.tags|join(', ') if script.tags else '-' }}</p>
+    <h3>Dependencies</h3>
+    <ul>{% for dep in script.dependencies %}<li>{{ dep.package_name }} {% if not dep.is_approved %}(غير معتمد){% endif %}</li>{% endfor %}</ul>
+    <h3>مدخلات السكربت</h3>
+    <form method='post' enctype='multipart/form-data' action='/scripts/{{ script.id }}/inputs'>
+      <textarea name='text' rows='8' placeholder='مدخلات متعددة، كل عنصر في سطر'></textarea>
+      <input type='file' name='file'>
+      <button class='btn'>إضافة مدخلات</button>
+    </form>
+    <p>عدد المدخلات: {{ script.inputs|length }}</p>
+    {% if script.inputs %}<div class='mono' style='max-height:160px;overflow:auto'>{% for item in script.inputs[:20] %}<div>{{ item.normalized_value }}</div>{% endfor %}</div>{% endif %}
+  </div>
+  <div class='card'>
+    <h3>الكود المولد</h3>
+    <pre>{{ script.generated_code }}</pre>
+  </div>
+</div>
+<div class='card'>
+  <h3>آخر التشغيلات</h3>
+  <table class='table'><thead><tr><th>ID</th><th>الحالة</th><th>التقدم</th><th>Retries</th><th></th></tr></thead><tbody>
+    {% for run in script.runs|sort(attribute='id', reverse=True)[:10] %}
+    <tr><td>#{{ run.id }}</td><td>{{ run.status }}</td><td>{{ run.progress_percent }}%</td><td>{{ run.retry_count }}</td><td><a class='btn small' href='/runs/{{ run.id }}/monitor'>مراقبة</a></td></tr>
+    {% else %}<tr><td colspan='5'>لا توجد تشغيلات بعد.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}
