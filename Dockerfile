@@ -1,8 +1,18 @@
 FROM python:3.11-slim
+
 WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-COPY requirements.txt ./
+
+# تحسين pip
+RUN pip install --upgrade pip
+
+# نسخ المتطلبات أولًا (cache optimization)
+COPY requirements.txt .
+
+# تثبيت الحزم
 RUN pip install --no-cache-dir -r requirements.txt
+
+# نسخ المشروع
 COPY . .
-RUN chmod +x scripts/*.sh
-CMD ["./scripts/start_web.sh"]
+
+# تشغيل السيرفر
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000"]
